@@ -19,7 +19,7 @@ Create `.pcba-workflow/sourcing-lock.csv` from [assets/sourcing-lock.csv](assets
 
 Basic outranks size: if a value is Basic only in a larger package, use it. Go larger when the part handles power or stress:
 
-- **Resistors:** P = I²R (or V²/R) at most ~half rated power (datasheet, VERIFIED); check max working voltage on high-rail dividers; size shunts by power and pulse rating.
+- **Resistors:** values from E12 or E24 so Basic parts exist; flag any other value for a design change rather than sourcing an Extended part. P = I²R (or V²/R) at most ~half rated power (datasheet, VERIFIED); check max working voltage on high-rail dividers; size shunts by power and pulse rating.
 - **Capacitors:** voltage rating ~1.5-2x working voltage; derate ceramics for DC bias; bulk/high-voltage usually need a larger case.
 - **Inductors, ferrites, fuses, diodes, MOSFETs:** by saturation/rated current, dissipation, thermal path.
 - **Connectors/mechanical:** by mating, current, strength.

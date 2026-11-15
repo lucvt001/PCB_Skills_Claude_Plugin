@@ -6,8 +6,9 @@ Assign and check a footprint for every symbol once its exact MPN is chosen. Read
 
 1. KiCad standard libraries, when the package matches the datasheet exactly.
 2. Manufacturer/LCSC/JLCPCB footprint, copied into `pcb/project.pretty` (registered in `fp-lib-table`), never referenced from a download folder.
-3. Drawn from the datasheet's recommended land pattern (IPC-7351 naming, zero orientation), saved in `pcb/project.pretty/`.
+3. Search online (SnapEDA, Ultra Librarian, Component Search Engine, manufacturer site, EasyEDA/LCSC import) and copy the result into `pcb/project.pretty/`.
 
+- **Never create custom footprints or symbols; default to searching online.** Do not draw a footprint or symbol from the datasheet yourself, and do not call `create_footprint` / `create_symbol`. If nothing usable turns up after searching, stop and ask the user rather than drawing one. Downloaded parts still go through the checks below.
 - Symbols come the same way into `pcb/sym/`. 3D models are optional, in `pcb/step/`, not reviewed.
 
 ## Check every assignment

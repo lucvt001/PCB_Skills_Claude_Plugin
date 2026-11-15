@@ -39,7 +39,7 @@ ERC can pass with zero errors while nets resolve consistently to the wrong thing
 
 - Pins are netlist pad numbers (e.g. `A6`), not pin names.
 - Net names as KiCad exports them: hierarchical-label nets carry the sheet path (`/Power/VBAT`); power-symbol nets keep plain names (`+3V3`, `GND`).
-- References follow the page x 100 scheme (`U101`, `R203`).
+- References follow the sheet number x 100 scheme, root sheet 0 (`U1`, `U101`, `R203`).
 
 ## Running it
 

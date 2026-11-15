@@ -22,7 +22,8 @@ Readability and electrical correctness are separate gates. Default to review-onl
 - New schematic/sheet: [new-schematic-kicad.md](references/new-schematic-kicad.md). Always: [schematic-rules.md](references/schematic-rules.md) (datasheets first, ask about selectable IC options, designators, value formats, sheet layout).
 - Block in the board (STM32, USB-C, CAN, RS-485, Ethernet, battery input, regulators, motor drive, I2C/LED/MOSFET): read only that section of [common-circuits.md](references/common-circuits.md); datasheet/EVM take precedence.
 - **Large designs** (>1 page or ~40+ parts): hierarchical sheets, one per functional block, hierarchical labels and sheet pins on the parent. No global labels between sheets (power symbols are fine). Small single-page designs may use wires and local labels.
-- **Designators, multi-sheet only** (single-sheet: R1, C1, U1): page x 100 + increment (R101, C201, U201). KiCad Annotate with "first free number after sheet number x 100", sorted by sheet. >99 of a prefix: split the page.
+- **Sheet numbering:** root sheet is sheet 0; subsheets continue from there (1, 2, 3, ...).
+- **Designators:** sheet number x 100 + increment (sheet 0: R1, C1, U1; sheet 1: R101; sheet 2: C201, U201). KiCad Annotate with "first free number after sheet number x 100", sorted by sheet. >99 of a prefix: split the sheet.
 - Every symbol carries `MPN` and `LCSC` once sourcing has run.
 - JLCPCB assembly defaults: [../workflow/references/jlcpcb-assembly.md](../workflow/references/jlcpcb-assembly.md).
 - ERC passing is necessary, not sufficient: inspect the schematic PDF pages.
