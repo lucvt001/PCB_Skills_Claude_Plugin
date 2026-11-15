@@ -1,0 +1,8 @@
+{
+  "name": "pcb-skills",
+  "description": "KiCad + JLCPCB PCB/PCBA design skills",
+  "owner": { "name": "lucvt001" },
+  "plugins": [
+    { "name": "pcb", "source": "./", "description": "Human-centric KiCad + JLCPCB design skills" }
+  ]
+}
