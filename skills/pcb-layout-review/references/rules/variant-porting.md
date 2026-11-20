@@ -1,6 +1,9 @@
 # Derivative PCB variant porting
 
-For adapting a proven board to another connector, enclosure, platform, regional standard, or related product. Goal: controlled reuse of verified circuit/layout knowledge without assuming the parent geometry satisfies the target.
+**Read when:** adapting a proven board to another connector, enclosure, platform, regional standard, or related product.
+**Also read:** `dense-connectors-and-board-stacks.md`, `autorouting-and-experiments.md`.
+
+Goal: controlled reuse of verified circuit/layout knowledge without assuming the parent geometry satisfies the target. A connector, enclosure, platform, or regional derivative is an electrical-and-mechanical constraint remap, not a cropped parent layout.
 
 ## 1. Write the delta before layout
 
@@ -10,7 +13,7 @@ Freeze the donor PCB/project and record hashes. Target manifest covers:
 - exact orderable connector MPN, body, locating features, footprint origin, mating-card thickness, insertion depth, retention, sample status;
 - removed/added/reassigned circuit functions and safe-state behavior;
 - power, ground, audio, protection, programming, UI changes;
-- board outline, thickness, slots, bosses, shell limits, antenna regions, keepouts;
+- board outline, slots, bosses, shell limits, antenna regions, keepouts;
 - assembly side, panel/depanel assumptions, finish, edge treatment, current fab thresholds.
 
 Never start from a cropped or scaled board; matching pin count doesn't prove matching pin semantics, mechanics, return paths, or assembly support.
@@ -45,3 +48,9 @@ Never start from a cropped or scaled board; matching pin count doesn't prove mat
 - Run normalized silk-over-silk, silk-over-copper, edge-clearance checks; preserve pin-1, polarity, functional labels; classify intentional connector-body overhang separately; unresolved labels stay `USER_REVIEW`.
 - Multi-board products: every adapter, daughtercard, mating connector in one dimensioned 2D drawing at one scale; dimensions marked measured, drawing-derived, inferred, or TBD.
 - Release needs one saved board/project state with zero unexplained raw disconnects, zero real DRC, zero power disconnects, passing layout gates, verified reference paths, visual/mechanical/silkscreen approval.
+
+## Lessons
+
+- Derivative board: donor hashes and an explicit electrical/mechanical delta exist before any placement reuse.
+- Reuse functional topology and pin-bank orientation, not absolute donor coordinates; repeat every placement and reference-path gate.
+- Donor/variant size comparisons: one orthographic scale with explicit dimensions; independently fitted screenshots are rejected.

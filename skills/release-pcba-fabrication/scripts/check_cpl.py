@@ -237,7 +237,7 @@ def self_test() -> int:
     assert "J101" in joined and "origin is 1.000 mm" in joined, joined
     assert "R101" not in joined and "R102" not in joined, joined
     corr = {"schema": "cpl-corrections-v1", "footprints": {
-        "Package_TO_SOT_SMD:SOT-23": {"top": {"rotation_deg": 180, "evidence": "JLCPCB preview rev A"}},
+        "Package_TO_SOT_SMD:SOT-23": {"top": {"rotation_deg": 180, "evidence": "JLCPCB preview v1.0"}},
         "Conn:Pin1Origin": {"top": {"rotation_deg": 0, "offset_mm": [1, 0], "evidence": "drawing"}}}}
     findings, rows = check(board, pos, corr, 0.05, 0.002)
     assert findings == [], findings

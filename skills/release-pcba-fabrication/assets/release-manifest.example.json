@@ -1,7 +1,7 @@
 {
   "schema": "pcba-release-manifest-v1",
-  "release": "example-rev-a",
-  "revision": "Rev A",
+  "release": "example-v1.0",
+  "revision": "v1.0",
   "status": "BLOCKED",
   "artifacts": {},
   "constraints": {},

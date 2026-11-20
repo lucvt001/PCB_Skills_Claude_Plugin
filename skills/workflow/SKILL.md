@@ -13,8 +13,8 @@ Speed and token savings first; the human drives. Part 1: any engineering project
 
 - Edit only what was asked; flag anything else, don't fix it unasked.
 - Re-read a file before touching it. If it differs from your last copy, it's the user's deliberate change: never revert or "tidy" it; say so if it looks wrong.
-- If an application has the project open, ask the user to save/close (or be ready to reload) before editing on disk.
-- Ask about every choice that changes the result (part options, connector types); decide small details yourself.
+- **KiCad open is not a blocker:** edit the project files on disk even if KiCad has them open; don't ask the user to close it and don't wait. When the edits are done, remind the user: **close KiCad without saving** (saving or applying anything from the open session would overwrite the disk edits; unsaved work in that session is lost), then reopen the project to see the changes.
+- **Schematic and datasheet-reading stage only:** ask about every choice that changes the result (part options, connector types); decide small details yourself. In later stages (sourcing, layout, release) follow `DECISIONS.md`, `board-defaults.md`, and the stage's rules; ask only where they're silent or conflict.
 - Don't commit or push unless asked.
 
 ## Checkpoints, no automatic review
@@ -57,6 +57,15 @@ Tag every number and claim a decision rests on:
 - Record rulings in `DECISIONS.md` as `D-<n>` with evidence.
 - Append-only: amendments supersede, old entries stay visible.
 
+## Board versioning
+
+- Versions are numbered **`v<major>.<minor>`**, starting at **v1.0**. `<rev>` everywhere in these skills means this string (e.g. `production/v1.1/`).
+- **Minor step (v1.0 → v1.1):** fixes and tweaks that keep the board's outline, mounting, connector positions and pinouts, and architecture: routing/pour fixes, part value or equivalent-part swaps, silkscreen, test points, DRC/DFM fixes.
+- **Major step (v1.x → v2.0):** major changes: new outline or mounting, moved/changed connectors or pinouts, new main IC or architecture, added/removed functional blocks, layer-count change. Minor resets to 0.
+- Unsure whether a change is major: propose the number with the reason and let the user decide.
+- A released version is never reused or patched: any change after `production/<rev>/` is released gets the next version.
+- Show the version in the KiCad title block (schematic and board) and as top silkscreen text (`board-defaults.md` text size), and in `layout-review.json` `board_revision`.
+
 ## Working rules
 
 - Edit the native source (or its generator), never only an export.
@@ -68,7 +77,7 @@ Tag every number and claim a decision rests on:
 ## Start
 
 1. Toolchain: the SessionStart hook already checked it. If it printed `[pcb] ...`, tell the user and stop on that item. Else read tool paths from `.pcba-workflow/env.json` (`kicad_cli`, `kicad_mcp_configured`) as `K`. No `env.json`: manual Preflight in [references/toolchain.md](references/toolchain.md).
-2. If `pcb/template.*` is unrenamed, rename to the project name (ask only for the name; KiCad closed).
+2. If `pcb/template.*` is unrenamed, rename to the project name (ask only for the name; proceed even if KiCad is open, then give the close-without-saving reminder).
 3. Establish the session (ask if unclear); use **only** its skills; open references only when needed.
 
 `SK` = `${CLAUDE_SKILL_DIR}/..` (scripts in `$SK/<skill>/scripts/`).

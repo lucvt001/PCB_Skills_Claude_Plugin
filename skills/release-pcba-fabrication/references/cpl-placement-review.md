@@ -31,7 +31,7 @@ It blocks on:
   "schema": "cpl-corrections-v1",
   "footprints": {
     "Package_TO_SOT_SMD:SOT-23": {
-      "top": {"rotation_deg": 180, "evidence": "JLCPCB preview, order rev A, U101 pin 1 checked"}
+      "top": {"rotation_deg": 180, "evidence": "JLCPCB preview, order v1.0, U101 pin 1 checked"}
     },
     "Conn:Pin1Origin": {
       "top": {"rotation_deg": 0, "offset_mm": [1.0, 0.0], "evidence": "datasheet body centre"}

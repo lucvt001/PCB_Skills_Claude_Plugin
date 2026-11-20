@@ -37,7 +37,7 @@ Coordinate specialists; don't replace them. Shared artifacts default to `.pcba-w
 - Invalidate downstream gates after controlled data changes with `${CLAUDE_SKILL_DIR}/scripts/program_state.py invalidate --change ...`; never manually keep a stale PASS.
 - Only the substitution approval is tracked; payment is always the user's.
 - Review-only requests don't authorize design edits, browser mutations, cart changes, or payments.
-- Parallel workers must not edit the same files; no disk edits to a KiCad document open in the GUI with unsaved changes.
+- Parallel workers must not edit the same files. KiCad open in the GUI doesn't block disk edits; finish with the workflow skill's close-without-saving reminder.
 - Stop on contradictory revisions, missing source-of-truth data, unverifiable safety assumptions, or a specialist BLOCKED.
 
 ## Re-opening a released design

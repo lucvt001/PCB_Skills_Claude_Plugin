@@ -3,61 +3,86 @@ name: pcb-layout-review
 description: PCB placement, routability, stackup, routing, planes, DRC/DFM, and 2D placement mechanics; also porting a proven board to a variant.
 ---
 
-# PCB Layout Reviewer
+# PCB Layout
 
 > `${CLAUDE_SKILL_DIR}`: scripts in `scripts/`, sibling skills in the parent folder. In references, `<skill-dir>` = this directory, `<skills>` = its parent. Run scripts from `pcb/` (or use absolute paths).
 
-Use the humanized architecture and circuit constraints as placement policy, not reference-number order or one global wire-length score. Read [layout-review-checklist.md](references/layout-review-checklist.md) (incl. "Proven lessons"); record the gate with [layout-review-record.md](references/layout-review-record.md); KiCad commands in [kicad-adapter.md](references/kicad-adapter.md). Gerber/drill/CPL or images alone allow DFM and visual review only, not connectivity proof.
+Rules live in three layers. Read them in this order, and **only what is relevant**:
 
-Read when they apply:
+| layer | file(s) | when to read |
+|---|---|---|
+| General | [references/general-rules.md](references/general-rules.md) | **in full, at the start of every session** |
+| Defaults | [references/board-defaults.md](references/board-defaults.md) | in full, at the start of every session |
+| Category | `references/rules/*.md` (index below) | per block, just before placing it and again before routing it |
 
-- [design-rules.md](references/design-rules.md): net classes, power paths, vias, high-voltage clearance, controlled impedance.
-- [layout-patterns.md](references/layout-patterns.md): the section for the block being placed/routed.
-- [placement-mechanics.md](references/placement-mechanics.md): always, before placement freeze and release.
-- [connector-stack-and-fanout.md](references/connector-stack-and-fanout.md): modules, card sockets, board-to-board, dense connector fanout.
-- [variant-porting.md](references/variant-porting.md): derivative of a proven board.
+## 1. Start of every layout session: mandatory
 
-## Project rules
+Before the first placement, routing, pour, or review action, and again after the session is resumed or the context is compacted:
 
-1. **Board size first:** the user sets size/outline before any placement.
-2. **Sheet by sheet, placement first:** place one sheet, then **stop for user check; no pours or routing**. After approval do pours and routing, stop again. Next sheet only after approval.
-3. **No automatic review:** no reviewer agent unless the user asks; skip `/adversarial-review` steps until then.
-4. Stackup, via, pour, and thermal via rules: `design-rules.md` section 1 and `layout-patterns.md` (GND stitching and planes, Thermal).
-5. DRC passing is necessary, not sufficient: inspect 2D plots of both sides (no 3D unless asked). Zero unrouted pads is not a release gate: check real DRC, power/GND zone connectivity, same-net zone islands.
+1. **Read `general-rules.md` completely, even if you believe you remember it.** Skimming or relying on memory is how rules get dropped. It is kept short so that a full read is cheap.
+2. **Read `board-defaults.md` completely.**
+3. **Do not read the category files yet.** They're loaded per block (section 2). Reading every file up front buries the rules that matter by the time you need them.
+4. Tell the user in one line that both files were read, then continue.
 
-## Establish truth
+## 2. Load category rules per block (just in time)
 
-1. Read repo rules, native board/project, brief, architecture, `DECISIONS.md`, sourcing lock, circuit review, bring-up plan, netlist, mechanics, enclosure, fab constraints, project layout lessons.
-2. Identify the board source of truth. KiCad: native CLI/API; other EDA: equivalent native exports.
-3. Before changing anything record: hashes, layer stack, net classes, rules, placement, connectivity, raw and classified DRC, via/drill histogram, top/bottom 2D assembly plots. **Read the rules and stackup actually stored** in `.kicad_pro`/`.kicad_dru`/`.kicad_pcb`.
-4. Record connector maturity and assembly dimensions as measured, drawing-derived, inferred, or TBD. A plausible 3D model is visual evidence, not mechanical proof.
-5. Separate hard constraints from negotiable targets. Never trade a short, new open, broken return path, unsupported pad, keepout violation, unsafe ownership state, or fab violation for a better score.
+Each category file has **Read when**, **Placement**, **Routing**, **Verify** sections and names related categories under **Also read**.
 
-## Review in order
+**Before placing a sheet:**
 
-1. **Architecture placement:** connector pin order along functional corridors; protection, translation, processing, memory, outputs along real flow; ownership/reset controls direct.
-2. **Critical locality:** decoupling in the supply-pin escape path, tight regulator loops, crystals/feedback, connector protection, antenna edge/keepout, user access, thermal, enclosure clearance. Place the bring-up plan's test pads, strap pads, rail-isolation links now.
-3. **Placement mechanics (2D):** run `placement-mechanics.md` (courtyards/Fab, nothing under module bodies, connector mouths, keep-outs, hand-fit access, enclosure). No 3D or height analysis unless asked.
-4. **Routability:** before routing run the checklist's routability section (via-lane widths, fine-pitch escape arithmetic, parts with no via-capable side, legal escape for every dense connector/module power and GND pad). Zero courtyard overlaps can still be unroutable. "No legal site" is not an answer while neighbours can move.
-5. **Layers/reference:** choose layer count from bus density, channels, return paths, RF, controlled interfaces, current, size, cost. A solid reference plane usually beats a low-current power plane; never assume 4 or 6 layers without analysis.
-6. **Routing:** continuous return paths, short critical controls, sensible topology, no forbidden stubs, right width/spacing, matching only where budgets require, legal transitions.
-7. **Power and zones:** prove every rail/GND pad reaches its network. Same net name, overlapping fill, or zero pad-opens is not proof. Connectivity is layer-aware; a declared zone is not a filled zone. Compare DRC on stored fills with `kicad-cli pcb drc --refill-zones` (no `--save-board`); a difference means stale fills.
-8. **Manufacturing:** compare trace/space, annulus, drill, via type, finish, thickness, impedance, drill count and cost thresholds with the current fab quote. Premium features are DFM feedback, not a reason to weaken electrical constraints.
-9. **Independent visual pass:** clean 2D views, each signal layer, fresh top/bottom 2D plots (Fab + SilkS + CrtYd + Edge.Cuts). Verify outlines, pin 1, polarity, connector overhang, pad support, antenna, outline, keepouts, silkscreen. Run silk-over-silk, silk-over-copper, edge-clearance checks first; keep pin-1/polarity/function; unresolved dense labels stay `USER_REVIEW`.
+1. List the functional blocks and notable parts on it (e.g. buck regulator, USB-C, crystal, shunt, CAN transceiver).
+2. Match each block to the index below by part type, net names, or sheet name. `power-routing-and-pours.md` applies to every board.
+3. Read the **Placement** section of every matched file (and its **Also read** files when they apply), right before placing that block. Read it at least once in this session even if you've read it in an earlier one.
+4. With the placement stop, post **"Rules applied"**: each file used and the 1-3 constraints that shaped the placement, so the user can see what governed it.
 
-Placement and routing are separate passes with a user check between: floorplan problems must be found before copper exists.
+**Before routing a sheet (after the user approves placement):**
 
-## Experiment safely
+- Re-read the **Routing** and **Verify** sections of the same files. Placement and routing are separated by a user check; don't route from memory.
+- Post "Rules applied" again with the routing stop.
 
-- Use named candidate states and paired project files; one coherent change, then measure raw disconnects, real DRC, power disconnects, layout gates, mfg defects.
-- Record with `${CLAUDE_SKILL_DIR}/scripts/score_experiment.py`; project lessons with `${CLAUDE_SKILL_DIR}/scripts/record_lesson.py` (both write to `.pcba-workflow/`, never the installed skill).
-- Freeze input; compare stackup, outline, via-process, routing experiments against the best safe candidate using the full gate vector. A bigger board or extra layer counts only if it removes a measured blocker without regressing another gate.
-- Prefer high-scoring methods; don't repeat a negative method unless conditions changed. Accept only measured net improvement with no new opens, real DRC, power disconnects, or mfg defects. A route for one trapped net isn't promotable if its coupled donor set is incomplete or another lane is stranded.
-- Autorouter (e.g. Freerouting DSN/SES): measure input size first; supervise for crash/stall (output present, crash signature in log, process gone, wall-clock timeout, progress-rate floor). Judge the board read back into KiCad, not the session file.
+**Trigger phrases:** when the user says **"apply stitching vias"**, re-read `board-defaults.md` section 5 "Stitching / pour-edge vias" before placing any via, and follow it exactly. When the user asks for a **copper pour**, re-read `board-defaults.md` section 6.
 
-## Release gate
+**Skip what isn't there:** don't open files for blocks that aren't on the board. If a block matches no category, follow its datasheet/EVM layout and the general rules, and tell the user it isn't covered (a candidate new category).
 
-- Zero unexplained raw disconnects, zero real DRC errors, zero power disconnects, all project layout checks passing, verified planes/critical nets, visual/mechanical/silkscreen PASS, all in the same saved state. Save, close, reopen, re-measure first.
-- Unverified connector body, card thickness, insertion depth, retention, or enclosure stack: stays `USER_REVIEW` or `BLOCKED` even if DRC is clean.
-- If the user asked for `/adversarial-review` of the routed board, no open FATAL/SERIOUS.
-- Waivers: narrow, evidence-backed, in `.pcba-workflow/layout-review.json`. Hand off to `/release-pcba-fabrication`. JLCPCB's placement preview after upload is the user's check.
+## 3. Category index (`references/rules/`)
+
+| file | read when the sheet has... |
+|---|---|
+| [power-routing-and-pours.md](references/rules/power-routing-and-pours.md) | **every board**: rails, power traces/vias, GND pours, planes, stitching |
+| [battery-input-and-protection.md](references/rules/battery-input-and-protection.md) | battery/DC input, fuse, reverse-polarity, input TVS, high-current bus |
+| [switching-regulators.md](references/rules/switching-regulators.md) | buck, boost, buck-boost, inverting converter, inductor, SW node |
+| [linear-regulators.md](references/rules/linear-regulators.md) | LDO, linear regulator |
+| [thermal-power-parts.md](references/rules/thermal-power-parts.md) | exposed thermal pads, MOSFETs, hot parts |
+| [current-sense-shunt.md](references/rules/current-sense-shunt.md) | shunt resistor + sense amplifier/ADC |
+| [motor-drive.md](references/rules/motor-drive.md) | half/H/3-phase bridges, gate drivers, motor phases |
+| [high-voltage-clearance.md](references/rules/high-voltage-clearance.md) | any net pair >= 31 V peak, wet environment |
+| [crystals-and-clocks.md](references/rules/crystals-and-clocks.md) | crystals, resonators, oscillators, clock nets |
+| [fine-pitch-ics-and-fanout.md](references/rules/fine-pitch-ics-and-fanout.md) | QFN/QFP/BGA/LGA <= 0.65 mm pitch, dense MCU/FPGA/PHY |
+| [differential-pairs-and-impedance.md](references/rules/differential-pairs-and-impedance.md) | any differential pair or impedance-controlled net |
+| [usb.md](references/rules/usb.md) | USB connector, D+/D-, VBUS |
+| [ethernet.md](references/rules/ethernet.md) | PHY, magnetics, RJ45 |
+| [can-rs485.md](references/rules/can-rs485.md) | CAN, RS-485/422 transceiver, bus termination |
+| [digital-buses.md](references/rules/digital-buses.md) | I2C, SPI, UART, QSPI/SDIO, parallel/memory buses |
+| [analog-and-adc.md](references/rules/analog-and-adc.md) | op-amps, ADC inputs, references, sensor front-ends |
+| [modules-rf-and-antennas.md](references/rules/modules-rf-and-antennas.md) | radio modules, castellated/LGA modules, antennas, RF feeds |
+| [connectors.md](references/rules/connectors.md) | any connector; switches/LEDs/buttons at the board edge |
+| [dense-connectors-and-board-stacks.md](references/rules/dense-connectors-and-board-stacks.md) | card-edge, board-to-board, sockets, daughtercards, dense fanout |
+| [test-points-and-fiducials.md](references/rules/test-points-and-fiducials.md) | bring-up test/strap pads, fiducials |
+| [mechanical-fit-and-assembly.md](references/rules/mechanical-fit-and-assembly.md) | enclosure, mounting holes, through-hole, hand-fit parts |
+| [autorouting-and-experiments.md](references/rules/autorouting-and-experiments.md) | running an autorouter, comparing layout candidates |
+| [variant-porting.md](references/rules/variant-porting.md) | derivative of a proven board |
+
+When a new kind of block keeps coming up, add a category file with the same four sections and a row here; keep rules that apply to every board in `general-rules.md` only, never duplicated in a category.
+
+## 4. Workflow
+
+1. **Session start** (section 1), then establish truth (`general-rules.md` section 3).
+2. **Per sheet, placement:** load categories (section 2) → place → routability check (`general-rules.md` section 5) → plots → "Rules applied" → **stop for the user**.
+3. **Per sheet, pours and routing:** re-read Routing/Verify → route → verify (`general-rules.md` sections 6-7) → "Rules applied" → **stop for the user**.
+4. **Whole board:** manufacturing and visual pass, release gate (`general-rules.md` sections 8-9).
+
+## Tools and records
+
+- KiCad CLI and MCP commands: [references/kicad-adapter.md](references/kicad-adapter.md).
+- Gate record: [references/layout-review-record.md](references/layout-review-record.md) → `.pcba-workflow/layout-review.json`.
+- `scripts/score_experiment.py` (experiments) and `scripts/record_lesson.py` (project lessons) write to `.pcba-workflow/`, never the installed skill.
