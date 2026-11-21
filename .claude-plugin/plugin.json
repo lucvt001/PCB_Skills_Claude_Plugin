@@ -1,6 +1,6 @@
 {
   "name": "pcb",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Human-centric KiCad + JLCPCB PCBA design skills: circuit design, sourcing, layout, bring-up, release.",
   "author": {
     "name": "lucvt001"

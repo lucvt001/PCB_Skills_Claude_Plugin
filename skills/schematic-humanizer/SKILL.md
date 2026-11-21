@@ -38,6 +38,10 @@ Read [canonical-connectivity.md](references/canonical-connectivity.md) and defin
 7. **Render again.** Reinspect every page and changed crop; reject any annotation hiding a wire, bus, pin, reference, value, heading, or dominant signal path.
 8. **Prove preservation.** Re-export with the same adapter; run `python ${CLAUDE_SKILL_DIR}/scripts/compare_connectivity.py before after` (KiCad XML accepted). Require exact identities, net names, ref/pin memberships, no new ERC/lint findings, no protected layout changes. After any generator config/override change, prove the active variant in a deterministic manifest or sentinel output and repeat the comparison; ERC alone is insufficient.
 
+## Per-edit cleanup (mandatory for every schematic edit)
+
+Any schematic edit, in any session, is followed immediately by steps 3-5 above applied to that edit's local area only (not the whole sheet or other sheets): re-render the touched crop, fix overlaps and hygiene, place it in its sub-circuit box, and confirm the touched nets are as intended. The full workflow is for dedicated humanization requests.
+
 ## Completion report
 
 Authoritative files, baseline/final counts, comparison result, ERC/lint before/after, protected-file proof, every page/crop inspected, limitations, final snapshot. Write `.pcba-workflow/schematic-visual-audit.json`. Route circuit findings to `/design-and-review-circuit`, not into visual approval. Copy-ready requests: [prompt-template.md](references/prompt-template.md).

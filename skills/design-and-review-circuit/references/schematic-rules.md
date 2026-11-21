@@ -12,4 +12,12 @@
 - **Capacitor Value field:** capacitance then voltage: `1u_50V`, `100n_16V`, `22p_50V`.
 - **Standard values:** resistors E12 or E24 only, so JLCPCB Basic parts exist for every value (pick the nearest E12/E24 value and recheck the calculation; E96 or other values only with a stated reason, and then check Basic availability); capacitors E6/E12 (1u, 2.2u, 4.7u, 10u, 22u, 47u, 100n).
 - **Sheet arrangement:** main IC in the middle, support circuitry around it, one titled dashed box per functional sub-circuit holding only the equation or datasheet rationale (no part numbers, no prose), with datasheet/EVM source section/page tagged; text 40 mil (1.016 mm), titles 70 mil (1.778 mm). Keep each sub-circuit's wiring to the IC compact and visible for datasheet cross-check. See `schematic-humanizer`.
+- **Cleanup after every edit (mandatory):** every schematic edit (add/move/delete part, wire, label, value change) is followed, before moving on, by a cleanup and humanization pass scoped to that edit only (not the whole sheet or other sheets):
+  - Re-render the touched area and inspect it.
+  - Fix overlaps (labels, references, values over symbols, pins, wires or each other), wires under symbols, unintended junctions, off-grid items, and stacked or orphaned labels.
+  - Place the edit as the layout rules above require: compact visible wiring to the IC, inside its titled dashed box, flow left to right, power top, ground bottom.
+  - Update the affected box text, designators and fields.
+  - Confirm the edit's net connectivity is as intended (e.g. `list_schematic_nets`/ERC for the touched nets).
+  - Do not batch several edits and clean up once at the end; do not skip it for "small" edits.
+  - Method: `schematic-humanizer`.
 - Each part carries `MPN` and `LCSC` once sourcing has run.
