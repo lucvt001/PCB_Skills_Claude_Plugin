@@ -14,7 +14,12 @@ Mandatory after every meaningful rearrangement and again after adding comments o
 
 ## Full-page inspection
 
-Render every page to PNG at a resolution where pin labels are readable. Inspect:
+Render every page to PNG at about print scale (A4 at roughly 10 px/mm: SVG export, then a headless browser screenshot) so that the text size reads as it will on paper. Inspect:
+
+- text below 1.27 mm, the frame or title block being crossed, uneven page balance;
+- ground/power symbols pointing into a wire, part or pin row; field text on rotated or mirrored symbols;
+- wires running inside foreign boxes or along box frames;
+- literal `\n` in notes (a sign of an escaping bug);
 
 - dominant left-to-right signal flow;
 - functional grouping and sheet titles;

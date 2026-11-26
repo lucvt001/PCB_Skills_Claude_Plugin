@@ -21,8 +21,9 @@ For creating a schematic or new sheet, not reviewing one. Rules on datasheets, h
 
 - Standard KiCad symbols when the pinout matches the exact part; else search online (SnapEDA, Ultra Librarian, manufacturer, EasyEDA/LCSC import) and copy it into `pcb/sym/`. **Never create custom symbols or footprints; default to searching online.** If nothing usable is found, ask the user. Check the pin types of any downloaded symbol (power in/out, input, output, bidirectional, passive, open collector) against the datasheet so ERC is meaningful.
 - Fields: Value; `MPN` and `LCSC` (filled in sourcing); `Datasheet` pointing to `pcb/datasheets/`. Footprints may be provisional; sourcing assigns final ones.
-- **Value strings:** no dot or comma as a decimal separator (they break CSV/BOM parsing and locale handling). Use the unit letter as the decimal point (`4k7`, `2R2`, `0R`, `1M5`, `3V3`). Do not use underscores in values, except in capacitors (below).
-- **Capacitors:** always spell out capacitance followed by voltage rating, separated by an underscore, e.g. `10u_100V`, `100n_50V`, `4u7_16V`. Never a bare capacitance. The underscore is used only here, as the separator between capacitance and voltage.
+- **Value strings (IEC 60062 RKM):** no dot or comma as a decimal separator (they break CSV/BOM parsing and locale handling). Use the unit letter as the decimal point (`4k7`, `2R2`, `10R`, `0R`, `1M5`, `3m` for 3 mOhm, `3V3`). Resistors always carry a letter (`10R`, not `10`). No underscores in values. Every Value is visible on the sheet.
+- **Capacitors:** always capacitance, one space, voltage rating, e.g. `10u 100V`, `100n 50V`, `4u7 16V`, `100u 6V3`. Never a bare capacitance.
+- **Connectors:** the Value is the manufacturer part number, not the generic library name. Parts without a part number get a short description (`Open`/`Bridged` jumpers, `M3` holes, the module name).
 - Mark DNP parts (hedges, optional termination) with KiCad's DNP attribute.
 
 ## Annotation and checks

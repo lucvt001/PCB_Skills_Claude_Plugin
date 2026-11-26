@@ -9,9 +9,12 @@
 - **Sheet numbering:** root sheet is sheet 0; subsheets continue from there (1, 2, 3, ...).
 - **Designators:** sheet number x 100 + increment (root/sheet 0: R1, R2, C1, U1; sheet 1: R101, C101, U101; sheet 2: R201, C201, U201). Annotate with "Use first free number after sheet number x 100". Split a sheet needing >99 of one prefix.
 - **Ask, don't assume, selectable IC options:** EN polarity/tie/divider, PG/open-drain use, UVLO thresholds, mode/config pins, address pins, soft-start, switching frequency, connector types and pinouts, etc. List datasheet options with a recommendation. Don't ask about capacitor ratings or other small details.
-- **Capacitor Value field:** capacitance then voltage: `1u_50V`, `100n_16V`, `22p_50V`.
+- **Value field (IEC 60062 RKM, always visible):**
+  - Resistors use a letter in place of the decimal point: `10R`, `4k7`, `100k`, and `3m` for 3 mOhm.
+  - Capacitors: capacitance, one space, voltage: `1u 50V`, `100n 16V`, `22p 50V`, `100u 6V3`.
+  - Connectors show the manufacturer part number. Parts without one get a short description (`Open`, `M3`).
 - **Standard values:** resistors E12 or E24 only, so JLCPCB Basic parts exist for every value (pick the nearest E12/E24 value and recheck the calculation; E96 or other values only with a stated reason, and then check Basic availability); capacitors E6/E12 (1u, 2.2u, 4.7u, 10u, 22u, 47u, 100n).
-- **Sheet arrangement:** main IC in the middle, support circuitry around it, one titled dashed box per functional sub-circuit holding only the equation or datasheet rationale (no part numbers, no prose), with datasheet/EVM source section/page tagged; text 40 mil (1.016 mm), titles 70 mil (1.778 mm). Keep each sub-circuit's wiring to the IC compact and visible for datasheet cross-check. See `schematic-humanizer`.
+- **Sheet arrangement:** main IC in the middle, support circuitry around it, one titled dashed box per functional sub-circuit with a 1-3 line note for the reader (function, key values, thresholds; no part numbers). Equations, evidence tags and the datasheet/EVM section/page go in `circuit-review.md` or a design note. Text at least 1.27 mm, titles 2.0 mm, one paper size per project (A4 default) so it reads printed. Keep each sub-circuit's wiring to the IC compact and visible for datasheet cross-check. See `schematic-humanizer` (`references/print-readability.md`).
 - **Cleanup after every edit (mandatory):** every schematic edit (add/move/delete part, wire, label, value change) is followed, before moving on, by a cleanup and humanization pass scoped to that edit only (not the whole sheet or other sheets):
   - Re-render the touched area and inspect it.
   - Fix overlaps (labels, references, values over symbols, pins, wires or each other), wires under symbols, unintended junctions, off-grid items, and stacked or orphaned labels.
@@ -20,4 +23,4 @@
   - Confirm the edit's net connectivity is as intended (e.g. `list_schematic_nets`/ERC for the touched nets).
   - Do not batch several edits and clean up once at the end; do not skip it for "small" edits.
   - Method: `schematic-humanizer`.
-- Each part carries `MPN` and `LCSC` once sourcing has run.
+- Each part carries one part-number field (`MPN`; never two fields holding different numbers) and `LCSC` once sourcing has run. Check that a passive's Value matches the value coded in its part number.

@@ -16,6 +16,7 @@ Speed and token savings first; the human drives. Part 1: any engineering project
 - **KiCad open is not a blocker:** edit the project files on disk even if KiCad has them open; don't ask the user to close it and don't wait. When the edits are done, remind the user: **close KiCad without saving** (saving or applying anything from the open session would overwrite the disk edits; unsaved work in that session is lost), then reopen the project to see the changes.
 - **Schematic and datasheet-reading stage only:** ask about every choice that changes the result (part options, connector types); decide small details yourself. In later stages (sourcing, layout, release) follow `DECISIONS.md`, `board-defaults.md`, and the stage's rules; ask only where they're silent or conflict.
 - Don't commit or push unless asked.
+- **Unanswered questions:** when asking, state the option you would pick. If the user hasn't answered within 5 minutes, pick the most reasonable option and carry on. When the work is done, tell the user which questions went unanswered and what was chosen, so they can reverse it. Record each such choice in `DECISIONS.md` as an assumption.
 
 ## Checkpoints, no automatic review
 
@@ -31,7 +32,8 @@ Main Claude coordinates and talks to the user. It may spawn a **designer** witho
 
 - **Designer:** does the work with the task's skills; the only agent that edits files. Brief: task, skills, input file paths. Stops and returns user-only questions immediately.
 - **Reviewer (on request):** read-only; loads `/pcb:adversarial-review`, exports its own copies. Brief: file paths only, never the designer's conclusions.
-- Never answer agent questions for the user.
+- Never answer agent questions for the user: forward them (the 5-minute rule above then applies).
+- **Watch running work:** every 10 minutes, check each subagent and background process (shell job, export, server) for progress. If one is hung (no output or file change, a stuck loop, a lock, waiting on input), resolve it: unblock it, or stop and restart it with a fixed brief or command. Then tell the user what hung and what was done.
 - One feedback cycle: designer fixes FATAL/SERIOUS once, reviewer re-checks from a fresh export. Still open: stop and report finding, what was tried, options.
 - Agents run sequentially, never editing concurrently.
 - Pass file paths, not pasted content; copy measured numbers from original output.
